@@ -56,8 +56,7 @@ config/
 
 database/
 ├── migrations/        # Migrações do banco
-├── seeders/          # Seeders para dados iniciais
-└── factories/        # Factories para testes
+└── seeders/          # Seeders para dados iniciais
 
 routes/
 └── api.php           # Rotas da API
@@ -154,9 +153,6 @@ docker-compose exec app php artisan make:controller Api/AuthController
 
 # Criar model
 docker-compose exec app php artisan make:model Category -m
-
-# Criar seeder
-docker-compose exec app php artisan make:seeder CategorySeeder
 ```
 
 ### Docker
