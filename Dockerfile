@@ -28,9 +28,12 @@ COPY . /var/www
 # Copy existing application directory permissions
 COPY --chown=www-data:www-data . /var/www
 
-# Change current user to www
+# ✅ Torna o repositório seguro para o Git antes de trocar de usuário
+RUN git config --system --add safe.directory /var/www
+
+# Agora troca para o usuário www-data
 USER www-data
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["php-fpm"] 
+CMD ["php-fpm"]
