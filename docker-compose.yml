@@ -8,10 +8,9 @@ services:
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www/
-    user: "1000:1000"               
+    user: "1000:1000" 
     volumes:
       - ./:/var/www
-      - laravel_storage:/var/www/storage
     networks:
       - laravel_network
     depends_on:
@@ -49,7 +48,6 @@ services:
 
 volumes:
   dbdata:
-  laravel_storage:
 
 networks:
   laravel_network:
