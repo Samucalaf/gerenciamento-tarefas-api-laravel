@@ -23,5 +23,6 @@ class CadastroController extends Controller
             $validate['email'],
             bcrypt($validate['senha']),
         ]);
+        return response()->json(['mensagem' => 'Usuário cadastrado com sucesso!']);
 }
 }
