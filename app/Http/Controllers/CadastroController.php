@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ILLuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
+
 
 class CadastroController extends Controller
 {
@@ -14,11 +15,11 @@ class CadastroController extends Controller
 
         $validate = $request->validate([
             'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique',
-            'senha' => 'nullable|string|min:18'
+            'email' => 'required|email|unique:usuarios,email',
+            'senha' => 'nullable|string'
         ]);
 
-        DB::insert('INSERT INTO usuarios (name, email, senha) VALUES (?, ?, ?)', [
+        DB::insert('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', [
             $validate['nome'],
             $validate['email'],
             bcrypt($validate['senha']),
