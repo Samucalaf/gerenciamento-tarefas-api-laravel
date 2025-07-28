@@ -7,9 +7,14 @@ use App\Http\Controllers\CadastroController;
 use App\Http\Middleware\EnsureTokenIsValid;
 
 
+Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register'])
+                ->middleware(EnsureTokenIsValid::class);
 
-Route::post('/cadastro', [CadastroController::class, 'cadastroUsuario'])
-        ->middleware(EnsureTokenIsValid::class);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+});
 
-
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/user', function (Request $request) {
+        return $request->user();
+})->middleware('auth:sanctum');
