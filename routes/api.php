@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CadastroController;
 use App\Http\Middleware\EnsureTokenIsValid;
 
-Route::get('/teste', function () {
-    return 'OLá';
-});
+
 
 Route::post('/cadastro', [CadastroController::class, 'cadastroUsuario'])
         ->middleware(EnsureTokenIsValid::class);
