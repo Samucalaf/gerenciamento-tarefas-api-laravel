@@ -17,9 +17,9 @@ class EnsureTokenIsValid
     {
         $dados = $request->json()->all();
 
-        $nome = $dados['nome'] ?? null;
+        $nome = $dados['name'] ?? null;
         $email = $dados['email'] ?? null;
-        $senha = $dados['senha'] ?? null;
+        $senha = $dados['password'] ?? null;
 
 
         if (!$nome || !$email || !$senha){
