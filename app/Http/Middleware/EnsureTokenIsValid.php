@@ -15,7 +15,7 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $dados = $request->json()->all();
+        /*$dados = $request->json()->all();
 
         $nome = $dados['name'] ?? null;
         $email = $dados['email'] ?? null;
@@ -26,7 +26,7 @@ class EnsureTokenIsValid
             return response()->json([
                 'erro' => 'Nome, email e senha são obrigatórios.'
             ], 422);
-        }
+        }*/
 
         return $next($request);
     }
