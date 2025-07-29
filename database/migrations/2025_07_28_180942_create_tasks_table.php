@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->boolean('completed')->default(false);
+            $table->string('priority'); //prioridade
+            $table->date('due_data'); // data de vencimento
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
