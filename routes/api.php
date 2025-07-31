@@ -8,8 +8,7 @@ use App\Http\Middleware\EnsureTokenIsValid;
 
 
 Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register'])
-                ->middleware(EnsureTokenIsValid::class);
+        Route::post('/register', [AuthController::class, 'register']);
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/logout', [AuthController::class, 'logout']);
