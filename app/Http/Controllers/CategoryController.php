@@ -50,8 +50,9 @@ class CategoryController extends Controller
             'name' => 'required|string|max:100'
         ]);
 
+        $category->update($validated);
         
-        return response()->json($validated);
+        return response()->json($category);
     }
 
     /**
