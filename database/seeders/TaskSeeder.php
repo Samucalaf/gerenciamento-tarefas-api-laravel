@@ -17,7 +17,7 @@ class TaskSeeder extends Seeder
             'description' => 'Para melhorar minha aprendizagem',
             'completed' => false,
             'priority' => 'alta',
-            'due_data' => now()->addDays(7),
+            'due_date' => now()->addDays(7),
             'user_id' => 1,
             'category_id' => 1,
         ]);

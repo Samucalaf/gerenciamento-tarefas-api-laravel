@@ -18,11 +18,9 @@ class TaskController extends Controller
         
         $tasks = Task::where('user_id', $user->id)
             ->with('category')
-            ->orderBy('due_data') 
+            ->orderBy('due_date')
             ->get();
-
-
-
+            
         return response()->json($tasks);
     }
 
