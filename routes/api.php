@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CadastroController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\TaskController;
 use App\Http\Middleware\EnsureTokenIsValid;
 
 
@@ -16,6 +17,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:api')->group(function(){
         Route::apiResource('category', CategoryController::class);
+        Route::apiResource('task', TaskController::class);
 });
 
 
