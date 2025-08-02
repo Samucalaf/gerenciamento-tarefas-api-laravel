@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('priority'); //prioridade
             $table->date('due_data'); // data de vencimento
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
