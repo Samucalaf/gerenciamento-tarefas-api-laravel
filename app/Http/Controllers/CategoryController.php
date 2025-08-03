@@ -55,9 +55,7 @@ class CategoryController extends Controller
         return response()->json($category);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
