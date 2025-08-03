@@ -32,22 +32,16 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         $validate = $request->validate([
             'email' => 'required|email|',
             'password' => 'required|string'
         ]);
 
-
         if (Auth::attempt($validate)) {
-
             $user = User::where('email', $validate['email'])->first();
-
             $token = $user->createToken('api-token')->plainTextToken;
-
             return response()->json(['mensagem' => 'Login realizado com sucesso', 'token' => $token]);
         }
-
         return response()->json(['erro' => 'Credenciais invalidas'], 401);
     }
 
@@ -72,5 +66,4 @@ class AuthController extends Controller
             'mensagem' => 'Logout realizado com sucesso!'
         ]);
     }
-
 }
