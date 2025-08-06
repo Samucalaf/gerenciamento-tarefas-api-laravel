@@ -32,7 +32,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'Erro!' => $e->getMessage()
-            ], 401);
+            ], 422);
         }
     }
 
