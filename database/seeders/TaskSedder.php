@@ -18,7 +18,7 @@ class TaskSedder extends Seeder
             'completed' => false,
             'priority' => 'high',
             'due_date' => '2025-08-07', 
-            'user_id' => 3,
+            'user_id' => 1,
             'category_id' => 1,
         ]);
     }

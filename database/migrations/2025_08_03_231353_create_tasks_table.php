@@ -19,10 +19,11 @@ return new class extends Migration
             $table->boolean('completed');
             $table->string('priority');
             $table->date('due_date');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('category_id')
+            ->nullable()
+            ->constrained()
+            ->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
