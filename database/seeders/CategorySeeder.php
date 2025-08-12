@@ -13,8 +13,8 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name' => 'Estudar',
-            'user' => 1
+            'name' => 'Trabalho',
+            'user_id' => 2
         ]);
         
     }
