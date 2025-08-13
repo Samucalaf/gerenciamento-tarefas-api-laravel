@@ -76,8 +76,6 @@ class CategoryController extends Controller
     {
         $user = $request->user();
 
-        
-
         if (!$user) {
             return response()->json([
                 "Usuario não econtrado!"
@@ -86,19 +84,27 @@ class CategoryController extends Controller
 
         $search = $request->all();
 
-        
-        $result = Category::where('user_id', $user->id)
-        ->where('name', '=', $search['name'])
-        ->get();
 
-        
+        if (isset($search['between'])) {
+            $value1 = $search['between'][0];
+            $value2 = $search['between'][1];
+            $result = Category::where('user_id', $user->id)
+                ->whereBetween('created_at', [$value1, $value2])->get();
+            return response()->json($result);
+        }
+
+
+        $result = Category::where('user_id', $user->id)
+            ->where('name', '=', $search['name'])
+            ->get();
+
 
         if ($result->isEmpty()) {
             return response()->json([
                 "message" => "Nenhuma categoria encontrada!"
             ]);
         }
-       
+
         return response()->json($result);
     }
 }
