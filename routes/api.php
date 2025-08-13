@@ -16,6 +16,7 @@ Route::middleware('auth:api')->group(function(){
         Route::apiResource('category', CategoryController::class);
         Route::apiResource('task', TaskController::class);
         Route::get('filter', [TaskController::class, 'filter']);
+        Route::get('filter', [CategoryController::class, 'filter']);
 });
 
 
