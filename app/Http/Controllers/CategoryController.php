@@ -85,18 +85,40 @@ class CategoryController extends Controller
         $search = $request->all();
 
 
+
         if (isset($search['between'])) {
             $value1 = $search['between'][0];
             $value2 = $search['between'][1];
             $result = Category::where('user_id', $user->id)
-                ->whereBetween('created_at', [$value1, $value2])->get();
+                ->whereBetween('created_at', [$value1, $value2])
+                ->orderBy('created_at', 'desc')
+                ->get();
             return response()->json($result);
         }
 
 
-        $result = Category::where('user_id', $user->id)
-            ->where('name', '=', $search['name'])
+        if (isset($search['name'])) {
+            $result = Category::where('user_id', $user->id)
+                ->where('name', '=', $search['name'])
+                ->orderBy('name', 'desc')
+                ->get();
+        }
+
+        if (isset($search['delete'])){
+            
+            $result = Category::onlyTrashed()
+            ->where('user_id', $user->id)
+            ->orderBy('name', 'desc')
             ->get();
+            
+            if ($result->isEmpty()) {
+            return response()->json([
+                "message" => "Nenhuma categoria deletada!"
+            ]);
+        }
+
+            return response()->json($result);
+        }
 
 
         if ($result->isEmpty()) {
