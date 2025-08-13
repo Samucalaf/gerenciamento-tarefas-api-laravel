@@ -26,7 +26,10 @@ class CategoryController extends Controller
             'name' => 'required|string|max:100'
         ]);
 
-        $category = Category::create($valideted);
+        $category = Category::create([
+            'name' => $request->name,
+            'user_id' => $request->user()->id
+        ]);
         return response()->json($category, 201);
     }
 
@@ -51,22 +54,51 @@ class CategoryController extends Controller
         ]);
 
         $category->update($validated);
-        
+
         return response()->json($category);
     }
 
-    
+
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
         $category->delete();
 
         return response()->json([
-         
+
             'Excluida com sucesso!',
             $category
-            
-        ]);
 
+        ]);
+    }
+
+    public function filter(Request $request)
+    {
+        $user = $request->user();
+
+        
+
+        if (!$user) {
+            return response()->json([
+                "Usuario não econtrado!"
+            ], 401);
+        }
+
+        $search = $request->all();
+
+        
+        $result = Category::where('user_id', $user->id)
+        ->where('name', '=', $search['name'])
+        ->get();
+
+        
+
+        if ($result->isEmpty()) {
+            return response()->json([
+                "message" => "Nenhuma categoria encontrada!"
+            ]);
+        }
+       
+        return response()->json($result);
     }
 }
