@@ -14,7 +14,7 @@ class CategorySeeder extends Seeder
     {
         Category::create([
             'name' => 'Trabalho',
-            'user_id' => 2
+            'user_id' => 5
         ]);
         
     }
