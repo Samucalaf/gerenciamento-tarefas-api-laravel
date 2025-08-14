@@ -23,12 +23,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $valideted = $request->validate([
-            'name' => 'required|string|max:100'
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:100'
         ]);
 
         $category = Category::create([
             'name' => $valideted['name'],
-            'user_id' => $request->user()->id
+            'user_id' => $request->user()->id,
+            'description' => $valideted['description'] ?? null
         ]);
         return response()->json($category, 201);
     }
@@ -50,7 +52,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:100'
+            'name' => 'required|string|max:100',
         ]);
 
         $category->update($validated);
@@ -118,6 +120,11 @@ class CategoryController extends Controller
         }
 
             return response()->json($result);
+        }
+
+        if (isset($search['description'])){
+
+            
         }
 
 
