@@ -53,6 +53,7 @@ class CategoryController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:100',
+            'description' => 'required|string|max:100'
         ]);
 
         $category->update($validated);
@@ -95,6 +96,12 @@ class CategoryController extends Controller
                 ->whereBetween('created_at', [$value1, $value2])
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
             return response()->json($result);
         }
 
@@ -104,36 +111,44 @@ class CategoryController extends Controller
                 ->where('name', '=', $search['name'])
                 ->orderBy('name', 'desc')
                 ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
+            return response()->json($result);
         }
 
-        if (isset($search['delete'])){
-            
+        if (isset($search['delete'])) {
+
             $result = Category::onlyTrashed()
-            ->where('user_id', $user->id)
-            ->orderBy('name', 'desc')
-            ->get();
-            
+                ->where('user_id', $user->id)
+                ->orderBy('name', 'desc')
+                ->get();
+
             if ($result->isEmpty()) {
-            return response()->json([
-                "message" => "Nenhuma categoria deletada!"
-            ]);
-        }
+                return response()->json([
+                    "message" => "Nenhuma categoria deletada!"
+                ]);
+            }
 
             return response()->json($result);
         }
 
-        if (isset($search['description'])){
+        if (isset($search['description'])) {
+            $result = Category::where('user_id', $user->id)
+                ->where('description', 'like', '%' . $search['description'] .  '%')
+                ->orderBy('name', 'desc')
+                ->get();
 
-            
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
+
+            return response()->json($result);
         }
-
-
-        if ($result->isEmpty()) {
-            return response()->json([
-                "message" => "Nenhuma categoria encontrada!"
-            ]);
-        }
-
-        return response()->json($result);
     }
 }
