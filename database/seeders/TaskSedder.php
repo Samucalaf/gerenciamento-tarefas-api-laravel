@@ -13,12 +13,12 @@ class TaskSedder extends Seeder
     public function run(): void
     {
         Task::create([
-            'title' => 'Alimentação',
-            'description' => 'comer 3 mil calorias hoje',
+            'title' => 'teste',
+            'description' => 'testando minha pesquisa',
             'completed' => false,
-            'priority' => 'high',
-            'due_date' => '2025-08-07', 
-            'user_id' => 1,
+            'priority' => 'medium',
+            'due_date' => '2025-08-20', 
+            'user_id' => 2,
             'category_id' => 1,
         ]);
     }
