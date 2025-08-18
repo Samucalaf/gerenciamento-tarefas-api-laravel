@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
-
+use Illuminate\Validation\Rules\Exists;
 
 class TaskController extends Controller
 {
@@ -15,12 +15,12 @@ class TaskController extends Controller
     {
         $user = $request->user();
 
-       
+
         $tasks = Task::where('user_id', $user->id)
             ->with('category')
             ->orderBy('due_date')
             ->get();
-            
+
         return response()->json($tasks);
     }
 
@@ -94,5 +94,44 @@ class TaskController extends Controller
             'message' => 'Tarefa deletada com sucesso',
             $task
         ]);
+    }
+
+    public function filter(Request $request)
+    {
+        $user = $request->user(); //aqui eu pego o usuario logado
+
+        if (!$user) {
+            return response()->json(['message' => 'Token inválido ou não fornecido'], 401);
+        }
+
+        $search = $request->all(); //onde vem a pesquisa 
+        $query = Task::where('user_id', $user->id);  //query base serve para ir acumulando as pesquisas 
+
+        if (empty($search)) {
+            return response()->json([
+                'message' => 'Campo vazio'
+            ], 400);
+        }
+
+        if (isset($search['priority'])) {
+            $query->where('priority', $search['priority']);
+        }
+
+        if (isset($search['title'])) {
+            $query->where('title', 'like', '%' . $search['title'] . '%');
+        }
+
+        if (isset($search['description'])) {
+            $query->where('description', 'like', '%' . $search['description'] . '%');
+        }
+
+        $tasks = $query->get();
+
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'message' => 'nenhuma tarefa encontrada'
+            ]);
+        }
+        return response()->json($tasks);
     }
 }

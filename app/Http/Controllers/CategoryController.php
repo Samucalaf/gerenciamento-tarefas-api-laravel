@@ -23,10 +23,15 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $valideted = $request->validate([
-            'name' => 'required|string|max:100'
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:100'
         ]);
 
-        $category = Category::create($valideted);
+        $category = Category::create([
+            'name' => $valideted['name'],
+            'user_id' => $request->user()->id,
+            'description' => $valideted['description'] ?? null
+        ]);
         return response()->json($category, 201);
     }
 
@@ -47,26 +52,103 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:100'
+            'name' => 'required|string|max:100',
+            'description' => 'required|string|max:100'
         ]);
 
         $category->update($validated);
-        
+
         return response()->json($category);
     }
 
-    
+
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
         $category->delete();
 
         return response()->json([
-         
+
             'Excluida com sucesso!',
             $category
-            
-        ]);
 
+        ]);
+    }
+
+    public function filter(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                "Usuario não econtrado!"
+            ], 401);
+        }
+
+        $search = $request->all();
+
+
+
+        if (isset($search['between'])) {
+            $value1 = $search['between'][0];
+            $value2 = $search['between'][1];
+            $result = Category::where('user_id', $user->id)
+                ->whereBetween('created_at', [$value1, $value2])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
+            return response()->json($result);
+        }
+
+
+        if (isset($search['name'])) {
+            $result = Category::where('user_id', $user->id)
+                ->where('name', '=', $search['name'])
+                ->orderBy('name', 'desc')
+                ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
+            return response()->json($result);
+        }
+
+        if (isset($search['delete'])) {
+
+            $result = Category::onlyTrashed()
+                ->where('user_id', $user->id)
+                ->orderBy('name', 'desc')
+                ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria deletada!"
+                ]);
+            }
+
+            return response()->json($result);
+        }
+
+        if (isset($search['description'])) {
+            $result = Category::where('user_id', $user->id)
+                ->where('description', 'like', '%' . $search['description'] .  '%')
+                ->orderBy('name', 'desc')
+                ->get();
+
+            if ($result->isEmpty()) {
+                return response()->json([
+                    "message" => "Nenhuma categoria encontrada!"
+                ]);
+            }
+
+            return response()->json($result);
+        }
     }
 }
