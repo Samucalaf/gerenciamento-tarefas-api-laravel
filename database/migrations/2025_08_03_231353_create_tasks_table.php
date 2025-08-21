@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
+
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
@@ -21,9 +21,9 @@ return new class extends Migration
             $table->date('due_date');
             $table->foreignId('user_id')->constrained();
             $table->foreignId('category_id')
-            ->nullable()
-            ->constrained()
-            ->nullOnDelete();
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
