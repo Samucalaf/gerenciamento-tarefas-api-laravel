@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardUserController extends Controller
 {
@@ -40,9 +41,11 @@ class DashboardUserController extends Controller
 
         
         if(isset($requestUser['categories'])){
-            $categories = Category::where('user_id', $user->id)
-            ->whereNull('deleted_at')
-            ->get();
+            $categories = Cache::remember("categories_user_{$user->id}", 600, function() use ($user){
+                return Category::where('user_id', $user->id)
+                ->whereNull('deleted_at')
+                ->get();
+            });
 
             return response()->json([
                 'tarefas criadas e ativas',
