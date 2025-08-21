@@ -16,19 +16,14 @@ class DashboardUserController extends Controller
 
 
         if (isset($requestUser['category'])) {
-            $category = Category::where('user_id', $user->id)
-                ->where('name', $requestUser['category'])
-                ->with('tasks')
-                ->get();
+            $category = Cache::remember("categories_user_{$user->id}", 600, function () use ($user) {
+
+                return Category::where('user_id', $user->id)
+                    ->with('tasks')
+                    ->get();
+            });
 
             return response()->json($category);
-        }
-
-        if (isset($requestUser['amount'])) {
-            $allTasks = Task::where('user_id', $user->id)
-                ->get();
-
-            return response()->json($allTasks);
         }
     }
 
@@ -39,12 +34,12 @@ class DashboardUserController extends Controller
 
         $requestUser = $request->all();
 
-        
-        if(isset($requestUser['categories'])){
-            $categories = Cache::remember("categories_user_{$user->id}", 600, function() use ($user){
+
+        if (isset($requestUser['categories'])) {
+            $categories = Cache::remember("categories_user_{$user->id}", 600, function () use ($user) {
                 return Category::where('user_id', $user->id)
-                ->whereNull('deleted_at')
-                ->get();
+                    ->whereNull('deleted_at')
+                    ->get();
             });
 
             return response()->json([
@@ -52,8 +47,6 @@ class DashboardUserController extends Controller
                 $categories
             ]);
         }
-
-
     }
 
     public function statisticUser(Request $request)
