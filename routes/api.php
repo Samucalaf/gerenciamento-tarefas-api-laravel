@@ -21,6 +21,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('filter', [CategoryController::class, 'filter']);
         Route::get('statisticUser', [DashboardUserController::class, 'statisticTaskUser']);
         Route::get('statisticCategory', [DashboardUserController::class, 'statisticCategory']);
+        Route::get('statisticUser', [DashboardUserController::class, 'statisticUser']);
 });
 
 
