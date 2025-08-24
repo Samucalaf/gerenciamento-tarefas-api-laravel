@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Metric;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use Illuminate\Support\Facades\Cache;
@@ -16,6 +17,8 @@ class DashboardUserController extends Controller
         $requestUser = $request->all();
 
 
+        $time_start = microtime(true);
+
         if (isset($requestUser['category'])) {
             $category = Cache::remember("categories_user_{$user->id}", 600, function () use ($user) {
 
@@ -23,6 +26,15 @@ class DashboardUserController extends Controller
                     ->with('tasks')
                     ->get();
             });
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;
+
+            Metric::create([
+                'user_id' => $user->id,
+                'route' => '/statisticTaskUser',
+                'time' => $time
+            ]);
+
 
             return response()->json($category);
         }
@@ -35,6 +47,7 @@ class DashboardUserController extends Controller
 
         $requestUser = $request->all();
 
+        $time_start = microtime(true);
 
         if (isset($requestUser['categories'])) {
             $categories = Cache::remember("categories_user_{$user->id}", 600, function () use ($user) {
@@ -42,6 +55,15 @@ class DashboardUserController extends Controller
                     ->whereNull('deleted_at')
                     ->get();
             });
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;
+
+
+            Metric::create([
+                'user_id' => $user->id,
+                'route' => '/statisticCategory',
+                'time' => $time
+            ]);
 
             return response()->json([
                 'tarefas criadas e ativas',
@@ -52,10 +74,11 @@ class DashboardUserController extends Controller
 
     public function statisticUser(Request $request)
     {
-        $authUser = $request->user();
+        $user = $request->user();
         $requestUser = $request->all();
 
 
+        $time_start = microtime(true);
 
         if (isset($requestUser['Users'])) {
 
@@ -69,6 +92,16 @@ class DashboardUserController extends Controller
                 return User::whereBetween('created_at', [$value1, $value2])
                     ->get();
             });
+            
+            $time_end = microtime(true);
+            $time = $time_end - $time_start;
+
+
+            Metric::create([
+                'user_id' => $user->id,
+                'route' => '/statisticUser',
+                'time' => $time
+            ]);
 
 
             return response()->json($users);
