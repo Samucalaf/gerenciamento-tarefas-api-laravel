@@ -19,7 +19,7 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('task', TaskController::class);
         Route::get('filter', [TaskController::class, 'filter']);
         Route::get('filter', [CategoryController::class, 'filter']);
-        Route::get('statisticUser', [DashboardUserController::class, 'statisticTaskUser']);
+        Route::get('statisticTaskUser', [DashboardUserController::class, 'statisticTaskUser']);
         Route::get('statisticCategory', [DashboardUserController::class, 'statisticCategory']);
         Route::get('statisticUser', [DashboardUserController::class, 'statisticUser']);
 });
