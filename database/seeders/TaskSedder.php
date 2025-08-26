@@ -13,13 +13,13 @@ class TaskSedder extends Seeder
     public function run(): void
     {
         Task::create([
-            'title' => 'teste',
-            'description' => 'testando minha pesquisa',
+            'title' => 'Academia',
+            'description' => 'Mudar meu treino para um push e pull',
             'completed' => false,
-            'priority' => 'medium',
+            'priority' => 'high',
             'due_date' => '2025-08-20', 
             'user_id' => 2,
-            'category_id' => 1,
+            'category_id' => 2,
         ]);
     }
 }
