@@ -13,8 +13,9 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name' => 'Teste Para excluir',
-            'user_id' => 5
+            'name' => 'Trabalho',
+            'user_id' => 2,
+            'description' => 'Construir minha api de gerenciamento de tarefas e categorias'
         ]);
         
     }

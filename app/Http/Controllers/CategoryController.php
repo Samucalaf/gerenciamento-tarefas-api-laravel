@@ -23,7 +23,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $valideted = $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:categories,name',
             'description' => 'required|string|max:100'
         ]);
 
@@ -52,7 +52,7 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:100|unique:categories,name',
             'description' => 'required|string|max:100'
         ]);
 
