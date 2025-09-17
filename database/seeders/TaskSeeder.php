@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Task;
 
-class TaskSedder extends Seeder
+class TaskSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,11 +15,11 @@ class TaskSedder extends Seeder
         Task::create([
             'title' => 'Academia',
             'description' => 'Mudar meu treino para um push e pull',
-            'completed' => false,
+            'completed' => true,
             'priority' => 'high',
-            'due_date' => '2025-08-20', 
+            'due_date' => '2025-09-30', 
             'user_id' => 2,
-            'category_id' => 2,
+            'category_id' => 1,
         ]);
     }
 }
