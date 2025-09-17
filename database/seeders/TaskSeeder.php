@@ -15,11 +15,11 @@ class TaskSeeder extends Seeder
         Task::create([
             'title' => 'Academia',
             'description' => 'Mudar meu treino para um push e pull',
-            'completed' => false,
+            'completed' => true,
             'priority' => 'high',
-            'due_date' => '2025-08-20', 
+            'due_date' => '2025-09-30', 
             'user_id' => 2,
-            'category_id' => 2,
+            'category_id' => 1,
         ]);
     }
 }
