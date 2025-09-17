@@ -14,13 +14,28 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $query = Task::query();
 
+        $status = $request->get('status', 'pending');
 
-        $tasks = Task::where('user_id', $user->id)
+        if($status === 'completed'){
+            $query->where('user_id', $user->id)
             ->with('category')
-            ->orderBy('due_date')
-            ->get();
+            ->where('completed', true)
+            ->orderBy('due_date');
+        }elseif ($status === 'pending'){
+            $query->where('user_id', $user->id)
+            ->with('category')
+            ->where('completed', false)
+            ->orderBy('due_date');
+        }else{
+            $query->where('user_id', $user->id)
+            ->with('category')
+            ->orderBy('due_date');
+        }
 
+        $tasks = $query->get();
+        
         return response()->json($tasks);
     }
 
