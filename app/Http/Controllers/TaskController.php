@@ -85,7 +85,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'priority' => 'nullable|in:low,medium,high',
             'completed' => 'nullable|boolean',
