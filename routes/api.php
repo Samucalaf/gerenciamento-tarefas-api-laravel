@@ -14,13 +14,9 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-        Route::apiResource('category', CategoryController::class);
-        Route::apiResource('task', TaskController::class);
-        Route::apiResource('users', UserController::class);
 
-        
         Route::get('task/filter', [TaskController::class, 'filter']);
-        Route::get('category/filterr', [CategoryController::class, 'filter']);
+        Route::get('category/filter', [CategoryController::class, 'filter']);
 
 
         Route::get('statisticTaskUser', [DashboardUserController::class, 'statisticTaskUser']);
@@ -29,4 +25,10 @@ Route::middleware('auth:api')->group(function () {
 
 
         Route::get('profile', [UserController::class, 'profile']);
+
+
+
+        Route::apiResource('category', CategoryController::class);
+        Route::apiResource('task', TaskController::class);
+        Route::apiResource('users', UserController::class);
 });
