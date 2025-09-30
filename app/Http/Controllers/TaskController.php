@@ -85,7 +85,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'priority' => 'nullable|in:low,medium,high',
             'completed' => 'nullable|boolean',
@@ -140,6 +140,17 @@ class TaskController extends Controller
             $query->where('description', 'like', '%' . $search['description'] . '%');
         }
 
+        if (isset($search['completed'])) {
+            $query->where('completed', 1);
+        }
+        
+        if (isset($search['pending'])) {
+            $query->where('completed', 0);
+        }
+
+        if (isset($search['category_id'])){
+            $query->where('category_id', $search['category_id']);
+        }
         $tasks = $query->get();
 
         if ($tasks->isEmpty()) {
