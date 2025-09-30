@@ -140,6 +140,17 @@ class TaskController extends Controller
             $query->where('description', 'like', '%' . $search['description'] . '%');
         }
 
+        if (isset($search['completed'])) {
+            $query->where('completed', 1);
+        }
+        
+        if (isset($search['pending'])) {
+            $query->where('completed', 0);
+        }
+
+        if (isset($search['category_id'])){
+            $query->where('category_id', $search['category_id']);
+        }
         $tasks = $query->get();
 
         if ($tasks->isEmpty()) {
