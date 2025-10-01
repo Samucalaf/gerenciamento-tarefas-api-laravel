@@ -22,18 +22,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy files and set correct ownership
 COPY . /var/www
+RUN chown -R www-data:www-data /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
-
-# ✅ Torna o repositório seguro para o Git antes de trocar de usuário
+# Marca como diretório seguro para o Git
 RUN git config --system --add safe.directory /var/www
 
-# Agora troca para o usuário www-data
+# Use www-data
 USER www-data
 
-# Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
