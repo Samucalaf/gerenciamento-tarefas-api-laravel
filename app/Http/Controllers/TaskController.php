@@ -49,8 +49,7 @@ class TaskController extends Controller
 
         $tasks = $query->with('category')->orderBy('due_date')->get();
 
-        \Log::info('Status filtrado: ' . $status);
-        \Log::info('Total de tasks: ' . $tasks->count());
+        
 
         return response()->json($tasks);
     }
