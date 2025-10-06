@@ -35,10 +35,6 @@ class TaskController extends Controller
             $query->where('title', 'like', '%' .  $request->title . '%');
         }
 
-        if ($request->has('description')) {
-            $query->where('description', 'like', '%' . $request->description . '%');
-        }
-
         if ($request->has('priority')) {
             $query->where('priority', $request->priority);
         }
