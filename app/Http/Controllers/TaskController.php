@@ -14,28 +14,39 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $query = Task::query();
 
-        $status = $request->get('status', 'pending');
-
-        if($status === 'completed'){
-            $query->where('user_id', $user->id)
-            ->with('category')
-            ->where('completed', true)
-            ->orderBy('due_date');
-        }elseif ($status === 'pending'){
-            $query->where('user_id', $user->id)
-            ->with('category')
-            ->where('completed', false)
-            ->orderBy('due_date');
-        }else{
-            $query->where('user_id', $user->id)
-            ->with('category')
-            ->orderBy('due_date');
+        if (!$user) {
+            return response()->json(['message' => 'Token inválido'], 401);
         }
 
-        $tasks = $query->get();
-        
+        $query = Task::where('user_id', $user->id);
+        $status = $request->get('status', 'all');
+
+        if ($status === 'completed') {
+            $query->where('completed', 1);
+        } elseif ($status === 'pending') {
+            $query->where('completed', 0);
+        }
+
+
+
+
+        if ($request->has('title')) {
+            $query->where('title', 'like', '%' .  $request->title . '%');
+        }
+
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $tasks = $query->with('category')->orderBy('due_date')->get();
+
+
+
         return response()->json($tasks);
     }
 
@@ -92,6 +103,18 @@ class TaskController extends Controller
             'due_date' => 'nullable|date|after_or_equal:today'
         ]);
 
+        if ($request->has('completed') && $request->completed && $task->completed) {
+        return response()->json([
+            'message' => 'Esta tarefa já está concluída'
+        ], 422);
+    }
+
+        if ($task->completed && !$request->has('completed')) {
+        return response()->json([
+            'message' => 'Não é possível editar uma tarefa concluída'
+        ], 422);
+    }
+
         $task->update($validated);
         return response()->json($task);
     }
@@ -109,55 +132,5 @@ class TaskController extends Controller
             'message' => 'Tarefa deletada com sucesso',
             $task
         ]);
-    }
-
-    public function filter(Request $request)
-    {
-        $user = $request->user(); //aqui eu pego o usuario logado
-
-        if (!$user) {
-            return response()->json(['message' => 'Token inválido ou não fornecido'], 401);
-        }
-
-        $search = $request->all(); //onde vem a pesquisa 
-        $query = Task::where('user_id', $user->id);  //query base serve para ir acumulando as pesquisas 
-
-        if (empty($search)) {
-            return response()->json([
-                'message' => 'Campo vazio'
-            ], 400);
-        }
-
-        if (isset($search['priority'])) {
-            $query->where('priority', $search['priority']);
-        }
-
-        if (isset($search['title'])) {
-            $query->where('title', 'like', '%' . $search['title'] . '%');
-        }
-
-        if (isset($search['description'])) {
-            $query->where('description', 'like', '%' . $search['description'] . '%');
-        }
-
-        if (isset($search['completed'])) {
-            $query->where('completed', 1);
-        }
-        
-        if (isset($search['pending'])) {
-            $query->where('completed', 0);
-        }
-
-        if (isset($search['category_id'])){
-            $query->where('category_id', $search['category_id']);
-        }
-        $tasks = $query->get();
-
-        if ($tasks->isEmpty()) {
-            return response()->json([
-                'message' => 'nenhuma tarefa encontrada'
-            ]);
-        }
-        return response()->json($tasks);
     }
 }

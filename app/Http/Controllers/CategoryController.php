@@ -11,9 +11,37 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('tasks')->get();
+        $user  = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Token inválido'], 401);
+        }
+
+        $query = Category::where('user_id', $user->id);
+        $status = $request->get('status', 'all');
+
+
+
+        if ($request->has('name')) {
+            $query = Category::where('name', '=', $request->search['name'])
+                ->orderBy('name', 'desc');
+        }
+
+        if ($request->has('delete')) {
+
+            $query = Category::onlyTrashed()
+                ->orderBy('name', 'desc');
+        }
+
+        if ($request->has('description')) {
+            $query = Category::where('user_id', $user->id)
+                ->where('description', 'like', '%' . $request->search['description'] .  '%')
+                ->orderBy('name', 'desc');
+        }
+
+        $categories = $query->with('tasks')->orderBy('name', 'asc')->get();
         return response()->json($categories);
     }
 
@@ -76,85 +104,8 @@ class CategoryController extends Controller
         return response()->json([
 
             'Excluida com sucesso!',
-            $category
+            '$category' => $category
 
         ]);
-    }
-
-    public function filter(Request $request)
-    {
-        $user = $request->user();
-
-        if (!$user) {
-            return response()->json([
-                "Usuario não econtrado!"
-            ], 401);
-        }
-
-        $search = $request->all();
-
-
-
-        if (isset($search['between'])) {
-            $value1 = $search['between'][0];
-            $value2 = $search['between'][1];
-            $result = Category::where('user_id', $user->id)
-                ->whereBetween('created_at', [$value1, $value2])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            if ($result->isEmpty()) {
-                return response()->json([
-                    "message" => "Nenhuma categoria encontrada!"
-                ]);
-            }
-            return response()->json($result);
-        }
-
-
-        if (isset($search['name'])) {
-            $result = Category::where('user_id', $user->id)
-                ->where('name', '=', $search['name'])
-                ->orderBy('name', 'desc')
-                ->get();
-
-            if ($result->isEmpty()) {
-                return response()->json([
-                    "message" => "Nenhuma categoria encontrada!"
-                ]);
-            }
-            return response()->json($result);
-        }
-
-        if (isset($search['delete'])) {
-
-            $result = Category::onlyTrashed()
-                ->where('user_id', $user->id)
-                ->orderBy('name', 'desc')
-                ->get();
-
-            if ($result->isEmpty()) {
-                return response()->json([
-                    "message" => "Nenhuma categoria deletada!"
-                ]);
-            }
-
-            return response()->json($result);
-        }
-
-        if (isset($search['description'])) {
-            $result = Category::where('user_id', $user->id)
-                ->where('description', 'like', '%' . $search['description'] .  '%')
-                ->orderBy('name', 'desc')
-                ->get();
-
-            if ($result->isEmpty()) {
-                return response()->json([
-                    "message" => "Nenhuma categoria encontrada!"
-                ]);
-            }
-
-            return response()->json($result);
-        }
     }
 }
