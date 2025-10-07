@@ -45,7 +45,7 @@ class TaskController extends Controller
 
         $tasks = $query->with('category')->orderBy('due_date')->get();
 
-        
+
 
         return response()->json($tasks);
     }
@@ -102,6 +102,18 @@ class TaskController extends Controller
             'completed' => 'nullable|boolean',
             'due_date' => 'nullable|date|after_or_equal:today'
         ]);
+
+        if ($request->has('completed') && $request->completed && $task->completed) {
+        return response()->json([
+            'message' => 'Esta tarefa já está concluída'
+        ], 422);
+    }
+
+        if ($task->completed && !$request->has('completed')) {
+        return response()->json([
+            'message' => 'Não é possível editar uma tarefa concluída'
+        ], 422);
+    }
 
         $task->update($validated);
         return response()->json($task);
