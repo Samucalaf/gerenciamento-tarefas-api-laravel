@@ -37,6 +37,6 @@ class EnsureTokenIsValid
             }
         }
 
-        throw new AuthenticationException('Unauthenticated.', $guards);
+        throw new AuthenticationException('Unauthenticated', $guards);
     }
 }

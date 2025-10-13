@@ -47,7 +47,7 @@ class TaskController extends Controller
 
 
 
-        return response()->json($tasks);
+        return response()->json($tasks, 200);
     }
 
     /**
@@ -85,7 +85,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = Task::with(['category', 'user'])->findOrFail($id);
-        return response()->json($task);
+        return response()->json($task, 200);
     }
 
     /**
@@ -131,6 +131,6 @@ class TaskController extends Controller
         return response()->json([
             'message' => 'Tarefa deletada com sucesso',
             $task
-        ]);
+        ], 200);
     }
 }
