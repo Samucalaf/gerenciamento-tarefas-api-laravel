@@ -42,7 +42,7 @@ class CategoryController extends Controller
         }
 
         $categories = $query->with('tasks')->orderBy('name', 'asc')->get();
-        return response()->json($categories);
+        return response()->json($categories, 200);
     }
 
     /**
@@ -75,7 +75,7 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         $category = Category::findOrFail($id);
-        return response()->json($category);
+        return response()->json($category, 200);
     }
 
     /**
@@ -92,7 +92,7 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
-        return response()->json($category);
+        return response()->json($category, 200);
     }
 
 
@@ -106,6 +106,6 @@ class CategoryController extends Controller
             'Excluida com sucesso!',
             '$category' => $category
 
-        ]);
+        ], 200);
     }
 }
