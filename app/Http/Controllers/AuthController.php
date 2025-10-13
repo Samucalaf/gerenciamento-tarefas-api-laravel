@@ -28,7 +28,7 @@ class AuthController extends Controller
                 'mensagem' => 'Usuário cadastrado com sucesso!',
                 'usuario' => $user,
                 'Token' => $token
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'Erro!' => $e->getMessage()
@@ -47,7 +47,7 @@ class AuthController extends Controller
         if (Auth::attempt($validate)) {
             $user = User::where('email', $validate['email'])->first();
             $token = $user->createToken('api-token')->plainTextToken;
-            return response()->json(['mensagem' => 'Login realizado com sucesso', 'token' => $token]);
+            return response()->json(['mensagem' => 'Login realizado com sucesso', 'token' => $token], 200);
         } else {
             return response()->json([
                 'erro!' => 'Credenciais erradas!'
@@ -75,6 +75,6 @@ class AuthController extends Controller
         $access_token->delete();
         return response()->json([
             'mensagem' => 'Logout realizado com sucesso!'
-        ]);
+        ], 200);
     }
 }
