@@ -35,7 +35,7 @@ class CategoryRepository
         return $this->model->with('tasks')->find($id);
     }
 
-    public function create($data)
+    public function create(array $data)
     {
         return $this->model->create($data);
     }
