@@ -15,10 +15,6 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
-        Route::get('statisticTaskUser', [DashboardUserController::class, 'statisticTaskUser']);
-        Route::get('statisticCategory', [DashboardUserController::class, 'statisticCategory']);
-        Route::get('statisticUser', [DashboardUserController::class, 'statisticUser']);
-
 
         Route::get('profile', [UserController::class, 'profile']);
 
