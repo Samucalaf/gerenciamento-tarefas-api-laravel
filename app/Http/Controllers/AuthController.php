@@ -64,8 +64,6 @@ class AuthController extends Controller
             return response()->json(['erro' => 'token invalido'], 400);
         }
 
-        //busca pelo token
-
         $access_token = PersonalAccessToken::findToken($token);
 
         if (!$access_token) {
