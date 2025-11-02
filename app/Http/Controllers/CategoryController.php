@@ -72,7 +72,7 @@ class CategoryController extends Controller
 
 
         return response()->json([
-            'message' => 'Excluida com sucesso!',
+            'message' => 'deleted successfully',
             'category' => $category
         ]);
     }
