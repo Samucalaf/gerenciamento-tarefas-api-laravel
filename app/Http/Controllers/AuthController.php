@@ -25,13 +25,13 @@ class AuthController extends Controller
 
 
             return response()->json([
-                'mensagem' => 'Usuário cadastrado com sucesso!',
-                'usuario' => $user,
-                'Token' => $token
+                'message' => 'User registered successfully!',
+                'user' => $user,
+                'token' => $token
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'Erro!' => $e->getMessage()
+                'error' => $e->getMessage()
             ], 400);
         }
     }
@@ -47,10 +47,10 @@ class AuthController extends Controller
         if (Auth::attempt($validate)) {
             $user = User::where('email', $validate['email'])->first();
             $token = $user->createToken('api-token')->plainTextToken;
-            return response()->json(['mensagem' => 'Login realizado com sucesso', 'token' => $token]);
+            return response()->json(['message' => 'Login successful', 'token' => $token]);
         } else {
             return response()->json([
-                'erro!' => 'Credenciais erradas!'
+                'error' => 'Invalid credentials'
             ], 401);
         }
     }
@@ -61,18 +61,18 @@ class AuthController extends Controller
         $token = $request->bearerToken();
 
         if (!$token) {
-            return response()->json(['erro' => 'token invalido'], 400);
+            return response()->json(['error' => 'Invalid token'], 401);
         }
 
-        $access_token = PersonalAccessToken::findToken($token);
+        $accessToken = PersonalAccessToken::findToken($token);
 
-        if (!$access_token) {
-            return response()->json(['erro' => 'token invalido'], 400);
+        if (!$accessToken) {
+            return response()->json(['error' => 'Invalid token'], 401);
         }
 
-        $access_token->delete();
+        $accessToken->delete();
         return response()->json([
-            'mensagem' => 'Logout realizado com sucesso!'
+            'message' => 'Logout successful!'
         ]);
     }
 }

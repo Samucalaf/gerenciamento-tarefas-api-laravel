@@ -23,7 +23,7 @@ class CategoryRepository
 
     public function allDeleted()
     {
-        return $this->model->onlyTrashed()->with('name', 'asc')->get();
+        return $this->model->onlyTrashed()->orderBy('name', 'asc')->get();
     }
     public function findAll()
     {
