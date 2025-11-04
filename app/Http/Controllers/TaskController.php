@@ -3,134 +3,66 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Task;
-use Illuminate\Validation\Rules\Exists;
+use App\Service\TasksService;
+use App\Http\Requests\StoreTasksRequest;
+use App\Http\Requests\UpdateTasksRequest;
+use App\Http\Resources\TasksResource;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected TasksService $tasksService;
+
+    public function __construct(TasksService $tasksService)
+    {
+        $this->tasksService = $tasksService;
+    }
+
     public function index(Request $request)
     {
-        $user = $request->user();
+        $search = $request->query('search');
+        $status = $request->query('status');
+        $priority = $request->query('priority');
 
-        if (!$user) {
-            return response()->json(['message' => 'Token inválido'], 401);
+        if ($search) {
+            $tasks = $this->tasksService->searchTasksByTitleOrDescription($search);
+            return TasksResource::collection($tasks);
         }
 
-        $query = Task::where('user_id', $user->id);
-        $status = $request->get('status', 'all');
-
-        if ($status === 'completed') {
-            $query->where('completed', 1);
-        } elseif ($status === 'pending') {
-            $query->where('completed', 0);
+        if ($status) {
+            $tasks = $this->tasksService->getTasksByStatus($status);
+            return TasksResource::collection($tasks);
         }
 
-
-
-
-        if ($request->has('title')) {
-            $query->where('title', 'like', '%' .  $request->title . '%');
+        if ($priority) {
+            $tasks = $this->tasksService->getTasksByPriority($priority);
+            return TasksResource::collection($tasks);
         }
 
-        if ($request->has('priority')) {
-            $query->where('priority', $request->priority);
-        }
-
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        $tasks = $query->with('category')->orderBy('due_date')->get();
-
-
-
-        return response()->json($tasks, 200);
+        $tasks = $this->tasksService->allTasks();
+        return TasksResource::collection($tasks);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreTasksRequest $request)
     {
-        try {
-
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string|max:1000',
-                'priority' => 'nullable|in:low,medium,high',
-                'due_date' => 'nullable|date|after_or_equal:today',
-                'completed' => 'nullable|boolean',
-                'category_id' => 'nullable|integer|exists:categories,id'
-            ]);
-
-            $validated['user_id'] = $request->user()->id;
-
-            $task = Task::create($validated);
-
-            return response()->json($task, 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'Mensagem erro!' => 'Erro ao criar tarefa',
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        $task = $this->tasksService->createTask($request->validated());
+        return new TasksResource($task);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $task = Task::with(['category', 'user'])->findOrFail($id);
-        return response()->json($task, 200);
+        $task = $this->tasksService->findTaskById($id);
+        return new TasksResource($task);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateTasksRequest $request, string $id)
     {
-        $task = Task::findOrFail($id);
-
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'priority' => 'nullable|in:low,medium,high',
-            'completed' => 'nullable|boolean',
-            'due_date' => 'nullable|date|after_or_equal:today'
-        ]);
-
-        if ($request->has('completed') && $request->completed && $task->completed) {
-        return response()->json([
-            'message' => 'Esta tarefa já está concluída'
-        ], 422);
+        $this->tasksService->updateTask($id, $request->validated());
+        $task = $this->tasksService->findTaskById($id);
+        return new TasksResource($task);
     }
 
-        if ($task->completed && !$request->has('completed')) {
-        return response()->json([
-            'message' => 'Não é possível editar uma tarefa concluída'
-        ], 422);
-    }
-
-        $task->update($validated);
-        return response()->json($task);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $task = Task::findOrFail($id);
-
-        $task->delete();
-
-        return response()->json([
-            'message' => 'Tarefa deletada com sucesso',
-            $task
-        ], 200);
+        $this->tasksService->deleteTask($id);
+        return response()->noContent();
     }
 }

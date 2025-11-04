@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Service\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -11,62 +15,35 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    protected CategoryService $categoryService;
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
     public function index(Request $request)
     {
-        $user  = $request->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Token inválido'], 401);
+        $search = $request->query('search');
+        $categoriesDeleted = $request->query('deleted');
+        if ($search) {
+            $categories = $this->categoryService->searchCategories($search);
+            return CategoryResource::collection($categories);
         }
-
-        $query = Category::where('user_id', $user->id);
-        $status = $request->get('status', 'all');
-
-
-
-        if ($request->has('name')) {
-            $query = Category::where('name', '=', $request->search['name'])
-                ->orderBy('name', 'desc');
+        if ($categoriesDeleted) {
+            $categories = $this->categoryService->getAllDeletedCategories();
+            return CategoryResource::collection($categories);
         }
-
-        if ($request->has('delete')) {
-
-            $query = Category::onlyTrashed()
-                ->orderBy('name', 'desc');
-        }
-
-        if ($request->has('description')) {
-            $query = Category::where('user_id', $user->id)
-                ->where('description', 'like', '%' . $request->search['description'] .  '%')
-                ->orderBy('name', 'desc');
-        }
-
-        $categories = $query->with('tasks')->orderBy('name', 'asc')->get();
-        return response()->json($categories, 200);
+        $categories = $this->categoryService->getAllCategories();
+        return CategoryResource::collection($categories);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $valideted = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('categories')->whereNull('deleted_at')
-            ],
-            'description' => 'required|string|max:100',
-        ]);
-
-
-        $category = Category::create([
-            'name' => $valideted['name'],
-            'user_id' => $request->user()->id,
-            'description' => $valideted['description'] ?? null
-        ]);
-        return response()->json($category, 201);
+        $category = $this->categoryService->createCategory($request->validated());
+        return new CategoryResource($category);
     }
 
     /**
@@ -74,38 +51,29 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::findOrFail($id);
-        return response()->json($category, 200);
+        $category = $this->categoryService->getCategoryById($id);
+        return new CategoryResource($category);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
-        $category = Category::findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:100|unique:categories,name',
-            'description' => 'required|string|max:100'
-        ]);
-
-        $category->update($validated);
-
-        return response()->json($category, 200);
+        $category = $this->categoryService->updateCategory($id, $request->validated());
+        return new CategoryResource($category);
     }
 
 
     public function destroy(string $id)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
+        $category = $this->categoryService->getCategoryById($id);
+        $this->categoryService->deleteCategory($category->id);
+
 
         return response()->json([
-
-            'Excluida com sucesso!',
-            '$category' => $category
-
-        ], 200);
+            'message' => 'deleted successfully',
+            'category' => $category
+        ]);
     }
 }

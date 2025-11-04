@@ -3,40 +3,36 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class EnsureTokenIsValid
 {
+    /**
+     * Validate the bearer token.
+     */
+     
+    private function tokenIsValid(string $token): bool
+    {
+        return $token === config('app.api_token');
+    }
+
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next, ...$guards)
+    public function handle(Request $request, Closure $next): Response
     {
-        if ($request->expectsJson()) {
-            try {
-                $this->authenticate($request, $guards);
-            } catch (AuthenticationException $e) {
-                return response()->json(['message' => 'Token inválido ou expirado'], 401);
-            }
-        }
 
+        if (!$this->tokenIsValid($request->bearerToken())) {
+            return response()->json(
+                [
+                    'error' => 'Unauthorized'
+                ],
+                401
+            );
+        }
         return $next($request);
-    }
-
-     protected function authenticate($request, array $guards)
-    {
-        if (empty($guards)) {
-            $guards = [null];
-        }
-
-        foreach ($guards as $guard) {
-            if (auth()->guard($guard)->check()) {
-                return auth()->shouldUse($guard);
-            }
-        }
-
-        throw new AuthenticationException('Unauthenticated', $guards);
     }
 }

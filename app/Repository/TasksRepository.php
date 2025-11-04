@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Repository;
+
+use App\Models\Task;
+
+
+class TasksRepository
+{
+
+    protected $model;
+    public function __construct(Task $task)
+    {
+        $this->model = $task;
+    }
+
+    public function getByStatus(int $userId, string $status)
+    {
+        $query = $this->model->where('user_id', $userId);
+
+        if ($status === 'completed') {
+            return $query->where('completed', true)->get();
+        }
+
+        if ($status === 'pending') {
+            return $query->where('completed', false)->get();
+        }
+
+        return collect();
+    }
+
+    public function searchByTitleOrDescription(int $userId, string $searchTerm)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+            })
+            ->get();
+    }
+
+    public function getByPriority(int $userId, string $priority)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->where('priority', $priority)
+            ->get();
+    }
+
+    public function all(int $userId)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->get();
+    }
+
+    public function find(int $userId, $id)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->where('id', $id)
+            ->first();
+    }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update(int $userId, $id, array $data)
+    {
+        $task = $this->find($userId, $id);
+        if ($task) {
+            return $task->update($data);
+        }
+        return false;
+    }
+
+    public function delete(int $userId, $id)
+    {
+        $task = $this->find($userId, $id);
+        if ($task) {
+            return $task->delete();
+        }
+        return false;
+    }
+}
