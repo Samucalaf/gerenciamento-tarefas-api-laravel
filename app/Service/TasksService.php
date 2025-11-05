@@ -52,7 +52,7 @@ class TasksService
     public function findTaskById($id)
     {
         $userId = $this->getAuthenticatedUserId();
-        return $this->tasksRepository->find($userId, $id);
+        return $this->tasksRepository->find($id);
     }
 
     public function createTask(array $data)
@@ -64,12 +64,12 @@ class TasksService
     public function updateTask($id, array $data)
     {
         $userId = $this->getAuthenticatedUserId();
-        return $this->tasksRepository->update($userId, $id, $data);
+        return $this->tasksRepository->update( $id, $data);
     }
 
     public function deleteTask($id)
     {
         $userId = $this->getAuthenticatedUserId();
-        return $this->tasksRepository->delete($userId, $id);
+        return $this->tasksRepository->delete( $id);
     }
 }
