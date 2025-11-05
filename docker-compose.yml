@@ -8,6 +8,7 @@ services:
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www/
+    user: "1000:1000" 
     volumes:
       - ./:/var/www
     networks:
@@ -26,6 +27,8 @@ services:
       MYSQL_USER: laravel_user
     volumes:
       - dbdata:/var/lib/mysql
+    ports:
+      - "3306:3306"
     networks:
       - laravel_network
 
@@ -48,4 +51,4 @@ volumes:
 
 networks:
   laravel_network:
-    driver: bridge 
+    driver: bridge
