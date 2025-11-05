@@ -1,50 +1,63 @@
 <?php
-
 namespace App\Service;
-
-
+use App\Exceptions\UserValidationException;
 use App\Repository\TasksRepository;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-
 class TasksService
 {
     protected TasksRepository $tasksRepository;
-
     public function __construct(TasksRepository $tasksRepository)
     {
         $this->tasksRepository = $tasksRepository;
     }
-
+    private function getAuthenticatedUserId(): int
+    {
+        $userId = Auth::id();
+        if ($userId === null) {
+            throw new \Exception("User not authenticated.");
+        }
+        return $userId;
+    }
+    public function searchTasksByTitleOrDescription(string $searchTerm)
+    {
+        $userId = $this->getAuthenticatedUserId();
+        return $this->tasksRepository->searchByTitleOrDescription($userId, $searchTerm);
+    }
+    public function getTasksByStatus(string $status)
+    {
+        $userId = $this->getAuthenticatedUserId();
+        return $this->tasksRepository->getByStatus($userId, $status);
+    }
+    public function getTasksByPriority(string $priority)
+    {
+        $userId = $this->getAuthenticatedUserId();
+        return $this->tasksRepository->getByPriority($userId, $priority);
+    }
     public function allTasks()
     {
-        return $this->tasksRepository->all(Auth::id());
+        $userId = $this->getAuthenticatedUserId();
+        return $this->tasksRepository->all($userId);
     }
-
     public function findTaskById($id)
     {
-        $task = $this->tasksRepository->find($id);
-
-        if ($task->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        return $task;
+        $userId = $this->getAuthenticatedUserId();
+        return $this->tasksRepository->find($id);
     }
-
     public function createTask(array $data)
     {
-        $data['user_id'] = Auth::id();
+        $data['user_id'] = $this->getAuthenticatedUserId();
         return $this->tasksRepository->create($data);
     }
-
     public function updateTask($id, array $data)
     {
-        $this->findTaskById($id);
+        $userId = $this->getAuthenticatedUserId();
         return $this->tasksRepository->update($id, $data);
     }
-
     public function deleteTask($id)
     {
+        $userId = $this->getAuthenticatedUserId();
         return $this->tasksRepository->delete($id);
     }
 }
