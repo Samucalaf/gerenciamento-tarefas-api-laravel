@@ -62,7 +62,11 @@ class TaskController extends Controller
 
     public function destroy(string $id)
     {
+        $task = $this->tasksService->findTaskById($id);
         $this->tasksService->deleteTask($id);
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Task deleted successfully.',
+            'task' => $task
+        ]);
     }
 }
