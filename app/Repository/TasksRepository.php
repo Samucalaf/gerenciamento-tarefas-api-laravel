@@ -55,12 +55,9 @@ class TasksRepository
             ->get();
     }
 
-    public function find(int $userId, $id)
+    public function find(int $id)
     {
-        return $this->model
-            ->where('user_id', $userId)
-            ->where('id', $id)
-            ->first();
+        return $this->model->find($id);
     }
 
     public function create(array $data)
