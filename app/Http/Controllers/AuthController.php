@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserCreated;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
@@ -22,13 +24,20 @@ class AuthController extends Controller
             $user = User::create($validate);
             $token = $user->createToken('api-token')->plainTextToken;
 
+            if ($user){
+                $email = new UserCreated(
+                    $user
+                );
+            }
 
+            Mail::to($user->email)->send($email);
 
             return response()->json([
                 'message' => 'User registered successfully!',
                 'user' => $user,
                 'token' => $token
             ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()
