@@ -39,6 +39,12 @@ class UpdateTasksRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
+            'priority' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'min:1',
+            ],
             'due_date' => [
                 'sometimes',
                 'nullable',
