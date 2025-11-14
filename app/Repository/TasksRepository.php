@@ -65,18 +65,18 @@ class TasksRepository
         return $this->model->create($data);
     }
 
-    public function update(int $userId, $id, array $data)
+    public function update($id, array $data)
     {
-        $task = $this->find($userId, $id);
+        $task = $this->find($id);
         if ($task) {
             return $task->update($data);
         }
         return false;
     }
 
-    public function delete(int $userId, $id)
+    public function delete($id)
     {
-        $task = $this->find($userId, $id);
+        $task = $this->find($id);
         if ($task) {
             return $task->delete();
         }
