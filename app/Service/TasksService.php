@@ -1,10 +1,15 @@
 <?php
+
 namespace App\Service;
+
 use App\Exceptions\UserValidationException;
+use App\Mail\TaskCreated;
 use App\Repository\TasksRepository;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
 class TasksService
 {
     protected TasksRepository $tasksRepository;
@@ -48,7 +53,20 @@ class TasksService
     public function createTask(array $data)
     {
         $data['user_id'] = $this->getAuthenticatedUserId();
-        return $this->tasksRepository->create($data);
+
+        $task = $this->tasksRepository->create($data);
+        $user = User::find($data['user_id']);
+
+        if ($user) {
+            $email = new TaskCreated(
+                $task
+            );
+
+            Mail::to($task->user->email)->send($email);
+        }
+
+
+        return $task;
     }
     public function updateTask($id, array $data)
     {
