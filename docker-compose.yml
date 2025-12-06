@@ -45,6 +45,14 @@ services:
       - laravel_network
     depends_on:
       - app
+      
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - laravel_network   
 
 volumes:
   dbdata:
