@@ -65,12 +65,17 @@ class TasksRepository
         return $this->model->create($data);
     }
 
-    public function update($id, array $data)
+    public function update($id, array $data, $userId)
     {
-        $task = $this->find($id);
+        $task = $this->model
+            ->where('task_id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
         if ($task) {
             return $task->update($data);
         }
+
         return false;
     }
 

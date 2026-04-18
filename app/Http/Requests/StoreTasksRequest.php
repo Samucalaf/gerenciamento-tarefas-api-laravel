@@ -27,8 +27,7 @@ class StoreTasksRequest extends FormRequest
             'completed' => 'nullable|boolean',
             'priority' => 'nullable|string|min:1',
             'due_date' => 'nullable|date',
-            'user_id' => 'exists:users,id',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,category_id',
         ];
     }
 
@@ -42,8 +41,6 @@ class StoreTasksRequest extends FormRequest
             'description.max' => 'The description cannot exceed 1000 characters.',
             'completed.boolean' => 'The completed field must be true or false.',
             'due_date.date' => 'The due date must be a valid date.',
-            'user_id.required' => 'The user ID is required.',
-            'user_id.exists' => 'The provided user ID does not exist.',
             'category_id.exists' => 'The provided category ID does not exist.',
         ];
     }

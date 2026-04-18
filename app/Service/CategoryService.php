@@ -31,7 +31,10 @@ class CategoryService {
         if ($data['name'] === null || $data['description'] === null) {
             throw new \Exception("Name and Description are required.");
         }
-        $data['user_id'] = Auth::id();
+        $userId = Auth::id();
+        $data['user_id'] = $userId;
+        $data['created_by'] = $userId;
+        $data['updated_by'] = $userId;
         return $this->categoryRepository->create($data);
     }
     
@@ -54,6 +57,8 @@ class CategoryService {
         if ($data['name'] === null || $data['description'] === null) {
             throw new \Exception("Name and Description are required.");
         }
+
+        $data['updated_by'] = Auth::id();
 
         return $this->categoryRepository->update($id, $data);
     }

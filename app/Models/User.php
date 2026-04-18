@@ -14,6 +14,9 @@ class User extends Authenticatable
 {
     
     use HasApiTokens, HasFactory, Notifiable;
+    protected $primaryKey = 'user_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     /**
      * The attributes that are mass assignable.
@@ -48,16 +51,25 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function getAuthIdentifierName()
+    {
+        return 'user_id';
+    }
+
+    public function tokens()
+    {
+        return $this->morphMany(\Laravel\Sanctum\PersonalAccessToken::class, 'tokenable', 'tokenable_type', 'tokenable_id', 'user_id');
+    }
 
     public function setPassowordAttribute($valor){
         $this->attributes['password'] = Hash::make($valor);
     }
 
     public function Task (): HasMany{
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'user_id', 'user_id');
     }
 
     public function categories(){
-        return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class, 'user_id', 'user_id');
     }
 }

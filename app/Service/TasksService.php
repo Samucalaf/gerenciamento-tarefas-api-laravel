@@ -52,8 +52,10 @@ class TasksService
     }
     public function createTask(array $data)
     {
-        $data['user_id'] = $this->getAuthenticatedUserId();
-
+        $userId = $this->getAuthenticatedUserId();
+        $data['user_id'] = $userId;
+        $data['created_by'] = $userId;
+        $data['updated_by'] = $userId;
         $task = $this->tasksRepository->create($data);
         $user = User::find($data['user_id']);
 
@@ -64,14 +66,13 @@ class TasksService
 
             Mail::to($task->user->email)->send($email);
         }
-
-
         return $task;
     }
     public function updateTask($id, array $data)
     {
         $userId = $this->getAuthenticatedUserId();
-        return $this->tasksRepository->update($id, $data);
+        $data['updated_by'] = $userId;
+        return $this->tasksRepository->update($id, $data, $userId);
     }
     public function deleteTask($id)
     {

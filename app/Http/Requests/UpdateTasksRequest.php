@@ -50,15 +50,10 @@ class UpdateTasksRequest extends FormRequest
                 'nullable',
                 'date',
             ],
-            'user_id' => [
-                'sometimes',
-                'required',
-                'exists:users,id',
-            ],
             'category_id' => [
                 'sometimes',
                 'nullable',
-                'exists:categories,id',
+                'exists:categories,category_id',
             ],
         ];
     }
@@ -73,8 +68,6 @@ class UpdateTasksRequest extends FormRequest
             'description.max' => 'The description cannot exceed 1000 characters.',
             'completed.boolean' => 'The completed field must be true or false.',
             'due_date.date' => 'The due date must be a valid date.',
-            'user_id.required' => 'The user ID is required.',
-            'user_id.exists' => 'The provided user ID does not exist.',
             'category_id.exists' => 'The provided category ID does not exist.',
         ];
     }

@@ -8,15 +8,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Category extends Model
 {
     use SoftDeletes;
+    protected $primaryKey = 'category_id';
     protected $fillable = [
         'name',
         'user_id',
-        'description'
+        'description',
+        'created_by',
+        'updated_by'
     ];
 
     
     public function tasks(){
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'category_id', 'category_id');
     }
 
     public function user()  {
