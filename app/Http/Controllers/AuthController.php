@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 
@@ -24,7 +24,12 @@ class AuthController extends Controller
                 'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()->mixedCase()->symbols()]
             ]);
 
-            $user = User::create(attributes: $validate);
+            $normalized = array_map(function ($value) {
+                return is_string($value) ? trim($value) : $value;
+            }, $validate);
+
+            $normalized['password'] = Hash::make($normalized['password']);
+            $user = User::create($normalized);
             $token = $user->createToken('api-token')->plainTextToken;
 
             $email = new UserCreated($user);
