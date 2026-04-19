@@ -57,14 +57,9 @@ class TasksService
         $data['created_by'] = $userId;
         $data['updated_by'] = $userId;
         $task = $this->tasksRepository->create($data);
-        $user = User::find($data['user_id']);
 
-        if ($user) {
-            $email = new TaskCreated(
-                $task
-            );
-
-            Mail::to($task->user->email)->send($email);
+        if ($task->user) {
+            Mail::to($task->user->email)->send(new TaskCreated($task));
         }
         return $task;
     }

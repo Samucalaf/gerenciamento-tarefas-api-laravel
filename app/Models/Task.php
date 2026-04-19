@@ -11,6 +11,10 @@ class Task extends Model
 
     protected $primaryKey = 'task_id';
 
+    protected $casts = [
+        'due_date'    => 'datetime',
+        'notified_at' => 'datetime',
+    ];
     protected $fillable = [
         'title',
         'description',
